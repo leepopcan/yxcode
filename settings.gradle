@@ -1,0 +1,2 @@
+include ':app', ':framework:mvc', ':framework:networkcore'
+//include':download'

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/inner_editView"
+        android:hint="请输入内码信息"
+        android:lines="5"
+        android:gravity="left|top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/outer_editView"
+        android:hint="请输入外码信息"
+        android:lines="5"
+        android:gravity="left|top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_create"
+        android:layout_width="match_parent"
+        android:text="生成"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

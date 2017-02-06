@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="errorLevel">
+
+        <item>自购</item>
+        <item>租房</item>
+    </array>
+
+</resources>

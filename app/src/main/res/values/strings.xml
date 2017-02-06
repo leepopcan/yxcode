@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">央信码扫描</string>
+
+    <string name="yxCode">央信码</string>
+    <string name="qrCode">内码</string>
+    <string name="first">快速识别</string>
+    <string name="both">一般识别</string>
+
+    <string name="debug">开启调试</string>
+
+</resources>

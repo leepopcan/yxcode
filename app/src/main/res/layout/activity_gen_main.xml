@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <ImageView
+        android:scaleType="centerCrop"
+        android:id="@+id/iv"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/home_banner" />
+
+
+    <LinearLayout
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_below="@+id/iv"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            style="@style/button"
+            android:id="@+id/btn_common"
+            android:text="普通央信码" />
+
+        <Button
+            android:id="@+id/btn_fenji"
+            android:text="分级信息码"
+            style="@style/button" />
+
+        <Button
+            android:id="@+id/btn_inner"
+            android:text="嵌套央信码"
+            style="@style/button" />
+
+    </LinearLayout>
+</RelativeLayout>
