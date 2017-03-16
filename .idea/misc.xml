@@ -5,6 +5,16 @@
     <option name="MAX_HEAP_SIZE" value="1024" />
     <option name="PROGUARD_VM_OPTIONS" value="org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m" />
   </component>
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="formatter" value="ECLIPSE" />
+    <option name="id" value="1457342598524" />
+    <option name="name" value="default" />
+    <option name="optimizeImports" value="false" />
+    <option name="pathToConfigFileJava" value="D:/Application/AndroidCodeStyle.xml" />
+    <option name="selectedJavaProfile" value="Android Code Style" />
+    <option name="useOldEclipseJavaFormatter" value="true" />
+  </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>

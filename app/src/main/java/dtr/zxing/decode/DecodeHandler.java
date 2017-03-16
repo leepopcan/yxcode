@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
@@ -32,16 +33,13 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.xytxw.yangxin_android.ImgForYUVByteArr;
-import com.xytxw.yangxin_core.dto.DecodeDto;
-import com.xytxw.yangxin_core.util.Decoder;
-import com.xytxw.yangxin_core.util.exception.DecodeFailedException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import dtr.zxing.activity.CaptureActivity;
@@ -273,11 +271,11 @@ public class DecodeHandler extends Handler {
 				yxData[x * size.height + size.height - y - 1] = data[x + y * size.width];
 		}
 
-		DecodeDto decodeDto = null;
-		ImgForYUVByteArr source = buildLuminanceSourceforYxCode(yxData, size.height, size.width);
+		PlanarYUVLuminanceSource source = buildLuminanceSourceforYxCode(yxData, size.height, size.width);
 
 //		Log.e("TTT","source " + source.getWidth() + " - " + source.getHeight() + " size : " + size.width + " - " + size.height);
 		String fileName = "";
+		Result result = null;
 		if (source != null) {
 			try {
 					fileName = DateFormator.getFileName();
@@ -285,10 +283,17 @@ public class DecodeHandler extends Handler {
 
 					saveFile(data,size,FileUtil.CRASH_PATH,fileName);
 					FileUtil.saveCrashData(fileName,yxData);
-					FileUtil.writeStrToFile(FileUtil.CRASH_PATH,fileName,DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
-				    decodeDto = Decoder.newInstance().decode(source);
+//					FileUtil.writeStrToFile(FileUtil.CRASH_PATH,fileName,DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
+//				    decodeDto = Decoder.newInstance().decode(source);
 //					activity.deleteLog();
-//
+
+
+				BinaryBitmap image = new BinaryBitmap(new HybridBinarizer(source));
+				Map<DecodeHintType, Object> hints = new HashMap<DecodeHintType, Object>();
+				hints.put(DecodeHintType.POSSIBLE_FORMATS, Arrays.asList(new BarcodeFormat[] { BarcodeFormat.YX_CODE }));
+				result = new MultiFormatReader().decode(image, hints);
+
+
 
 //					FileUtil.copyFile(FileUtil.CRASH_PATH+fileName+".jpg",FileUtil.SUCCESS_PATH+fileName+".jpg");
 //					FileUtil.copyFile(FileUtil.CRASH_PATH+fileName+".dat",FileUtil.SUCCESS_PATH+fileName+".dat");
@@ -311,8 +316,8 @@ public class DecodeHandler extends Handler {
 			}
 		}
 
-		if (!decodeDto.isError()) {
-			APP.yxResult = decodeDto.getRes();
+		if (null != result && !TextUtils.isEmpty(result.getText())) {
+			APP.yxResult = result.getText();
 			yxCost = System.currentTimeMillis() - time;
 			if(APP.decodeMode == APP.DECODE_MODE.BOTH){
 				updateDebugInfo(yxCost,APP.yxResult);
@@ -326,15 +331,13 @@ public class DecodeHandler extends Handler {
 //			}
 			showSuccess(yxCost);
 		} else {
-			String errorMsg = decodeDto.getErrorMsg();
+			String errorMsg = "null result";
 //			if(!errorMsg.contains("返回码为-1")){
 				saveFile(data,size,FileUtil.FAILED_PATH,fileName);
 			try {
-				FileUtil.writeStrToFile(FileUtil.FAILED_PATH,fileName,DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
+//				FileUtil.writeStrToFile(FileUtil.FAILED_PATH,fileName,DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
 				FileUtil.saveCrashData(FileUtil.FAILED_PATH,fileName,yxData);
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (DecodeFailedException e) {
 				e.printStackTrace();
 			}
 //			}
@@ -513,12 +516,13 @@ public class DecodeHandler extends Handler {
 		return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
 	}
 
-	public ImgForYUVByteArr buildLuminanceSourceforYxCode(byte[] data, int width, int height) {
+	public PlanarYUVLuminanceSource buildLuminanceSourceforYxCode(byte[] data, int width, int height) {
 		Rect rect = activity.getCropRect();
 		if (rect == null) {
 			return null;
 		}
-		return new ImgForYUVByteArr(data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
+		return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
+//		return new ImgForYUVByteArr(data, width, height, rect.left, rect.top, rect.width(), rect.height(), false);
 	}
 
 }

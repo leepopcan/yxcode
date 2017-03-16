@@ -11,10 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xytxw.yangxin_android.ImgForYUVByteArr;
-import com.xytxw.yangxin_core.dto.DecodeDto;
-import com.xytxw.yangxin_core.util.Decoder;
-import com.xytxw.yangxin_core.util.exception.DecodeFailedException;
+
+import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -193,73 +191,73 @@ public class ReDecodeActivity extends BaseActivity {
 
 
     private void reDecode(byte[] data){
-        DecodeDto decodeDto = null;
-        ImgForYUVByteArr source = buildLuminanceSourceforYxCode(data, height, width);
-        if (source != null) {
-            try {
-                long time = System.currentTimeMillis();
-                if(mode == MODE_CRASH){
-                    FileUtil.writeStrToFile(FileUtil.CRASH_PATH, DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
-                } else if(mode == MODE_FAILED){
-                    FileUtil.writeStrToFile(FileUtil.FAILED_PATH, DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
-                }
-
-                decodeDto = Decoder.newInstance().decode(source);
-
-                if(mode == MODE_CRASH){
-                    FileUtil.deleteLog(FileUtil.CRASH_PATH);
-                } else if(mode == MODE_FAILED){
-                    FileUtil.deleteLog(FileUtil.FAILED_PATH);
-                }
-
-            } catch (final DecodeFailedException e) {
-                e.printStackTrace();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        result.setText(e.getMessage());
-                        hideDialog();
-                    }
-                });
-
-                return;
-            }
-        }
-
-        if(null == decodeDto){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    result.setText("null decodeDto");
-                    hideDialog();
-                }
-            });
-            return;
-        }
-
-        beepManager.playBeepSoundAndVibrate();
-        if (!decodeDto.isError()) {
-            message = decodeDto.getRes();
-        } else {
-            message = decodeDto.getErrorMsg();
-        }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                result.setText(message);
-                hideDialog();
-            }
-        });
+//        PlanarYUVLuminanceSource source = buildLuminanceSourceforYxCode(data, height, width);
+//        if (source != null) {
+//            try {
+//                long time = System.currentTimeMillis();
+//                if(mode == MODE_CRASH){
+//                    FileUtil.writeStrToFile(FileUtil.CRASH_PATH, DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
+//                } else if(mode == MODE_FAILED){
+//                    FileUtil.writeStrToFile(FileUtil.FAILED_PATH, DateFormator.formTime(time) + "----> width:" +source.getWidth()+"  height "+source.getHeight()+" \n "+ Arrays.toString(source.getBinaryArr()));
+//                }
+//
+//                decodeDto = Decoder.newInstance().decode(source);
+//
+//                if(mode == MODE_CRASH){
+//                    FileUtil.deleteLog(FileUtil.CRASH_PATH);
+//                } else if(mode == MODE_FAILED){
+//                    FileUtil.deleteLog(FileUtil.FAILED_PATH);
+//                }
+//
+//            } catch (final DecodeFailedException e) {
+//                e.printStackTrace();
+//
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        result.setText(e.getMessage());
+//                        hideDialog();
+//                    }
+//                });
+//
+//                return;
+//            }
+//        }
+//
+//        if(null == decodeDto){
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    result.setText("null decodeDto");
+//                    hideDialog();
+//                }
+//            });
+//            return;
+//        }
+//
+//        beepManager.playBeepSoundAndVibrate();
+//        if (!decodeDto.isError()) {
+//            message = decodeDto.getRes();
+//        } else {
+//            message = decodeDto.getErrorMsg();
+//        }
+//
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                result.setText(message);
+//                hideDialog();
+//            }
+//        });
     }
 
-    public ImgForYUVByteArr buildLuminanceSourceforYxCode(byte[] data, int width, int height) {
+    public PlanarYUVLuminanceSource buildLuminanceSourceforYxCode(byte[] data, int width, int height) {
         int x = PreferencesUtils.getInt(getApplicationContext(),"rect_x");
         int y = PreferencesUtils.getInt(getApplicationContext(),"rect_y");
         int _width = PreferencesUtils.getInt(getApplicationContext(),"rect_w");
         int _height = PreferencesUtils.getInt(getApplicationContext(),"rect_h");
-        return new ImgForYUVByteArr(data, width, height, x, y, _width, _height, false);
+        return new PlanarYUVLuminanceSource(data, width, height, x, y, _width, _height, false);
+//        return new ImgForYUVByteArr(data, width, height, x, y, _width, _height, false);
     }
 
 }

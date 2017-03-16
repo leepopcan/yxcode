@@ -13,19 +13,22 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.xytxw.yangxin_core.dto.InsideCodeDto;
-import com.xytxw.yangxin_core.util.RSCoder;
-import com.xytxw.yangxin_core.util.exception.DecodeFailedException;
-import com.xytxw.yangxin_core.util.exception.ErrorException;
-import com.xytxw.yangxin_core.yxCode.YXCode;
+import com.google.zxing.yxcode.util.G;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import yxcode.com.cn.yxdecoder.R;
@@ -111,57 +114,73 @@ public class EditOneActivity extends BaseActivity {
         });
     }
 
-    private void genCode(String content){
+
+    public BitMatrix testGenNormalYXCode(String content) {
+			int width = 300;
+			int height = 300;
+			String yxcodeFormat = "png";
+			HashMap<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
+			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        try {
+            return new MultiFormatWriter().encode(content, BarcodeFormat.YX_CODE, width, height, hints);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public BitMatrix testGenNestYXCode(String content) {
+			int width = 300;
+			int height = 300;
+			String yxcodeFormat = "png";
+			HashMap<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
+			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+			hints.put(EncodeHintType.YX_CODE_TYPE, G.YXCodeType.nest);
+        try {
+            return new MultiFormatWriter().encode(content, BarcodeFormat.YX_CODE, width, height,hints);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+        private void genCode(String content){
 
         if(type == TYPE_COMMON){
-            try {
-                YXCode yxCode = YXCode.newInstance(content, RSCoder.Level.per30, 0);
-                JumperUtils.launchResult(this,yxCode);
-
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (ErrorException e) {
-                e.printStackTrace();
-            }
+            JumperUtils.launchResult(this,testGenNormalYXCode(content));
         } else if(type == TYPE_INNER){
-            try {
-                String errorLevelStr = errorLevel.getSelectedItem().toString();
-                ErrorCorrectionLevel errorCorrectionLevel = ErrorCorrectionLevel.valueOf(errorLevelStr);
-
-                InsideCodeDto insideCode = null;
-
-                RadioButton radioButton = null;
-                int checkId = radioGroup.getCheckedRadioButtonId();
-                if(checkId == radioGroup.getChildAt(0).getId()){
-                    radioButton = (RadioButton) radioGroup.getChildAt(0);
-                    insideCode = InsideCodeDto.newQRInstance(content, errorCorrectionLevel);
-                } else if(checkId == radioGroup.getChildAt(1).getId()){
-                    radioButton = (RadioButton) radioGroup.getChildAt(1);
-                    insideCode = InsideCodeDto.newDataMatrixInstance(content, errorCorrectionLevel);
-                } else if(checkId == radioGroup.getChildAt(2).getId()){
-                    radioButton = (RadioButton) radioGroup.getChildAt(2);
-                    insideCode = InsideCodeDto.newAztecInstance(content, errorCorrectionLevel);
-                }
-
-                String md5 = new String(Hex.encodeHex(DigestUtils.getMd5Digest().digest(StringUtils.getBytesUtf8(content))));
-//                log.info("outSide：" + md5 + " | inside:" + content);
-                YXCode yxCode = YXCode.newInstanceWithInsideCode(md5, RSCoder.Level.per20, insideCode);
-
-                apply(getApplicationContext(),md5,insideCode.getContent());
-
-                if(null != radioButton){
-//                    YXCode yxCode = YXCode.newDefaultInstanceWithQRInside(content, ErrorCorrectionLevel.L);
-                    JumperUtils.launchResult(this,yxCode,insideCode.getContent(),radioButton.getText().toString(),md5);
-                }
-
-            } catch (DecodeFailedException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (ErrorException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                String errorLevelStr = errorLevel.getSelectedItem().toString();
+//                ErrorCorrectionLevel errorCorrectionLevel = ErrorCorrectionLevel.valueOf(errorLevelStr);
+//
+//                InsideCodeDto insideCode = null;
+//
+//                RadioButton radioButton = null;
+//                int checkId = radioGroup.getCheckedRadioButtonId();
+//                if(checkId == radioGroup.getChildAt(0).getId()){
+//                    radioButton = (RadioButton) radioGroup.getChildAt(0);
+//                    insideCode = InsideCodeDto.newQRInstance(content, errorCorrectionLevel);
+//                } else if(checkId == radioGroup.getChildAt(1).getId()){
+//                    radioButton = (RadioButton) radioGroup.getChildAt(1);
+//                    insideCode = InsideCodeDto.newDataMatrixInstance(content, errorCorrectionLevel);
+//                } else if(checkId == radioGroup.getChildAt(2).getId()){
+//                    radioButton = (RadioButton) radioGroup.getChildAt(2);
+//                    insideCode = InsideCodeDto.newAztecInstance(content, errorCorrectionLevel);
+//                }
+//
+//                String md5 = new String(Hex.encodeHex(DigestUtils.getMd5Digest().digest(StringUtils.getBytesUtf8(content))));
+////                log.info("outSide：" + md5 + " | inside:" + content);
+//                YXCode yxCode = YXCode.newInstanceWithInsideCode(md5, RSCoder.Level.per20, insideCode);
+//
+//                apply(getApplicationContext(),md5,insideCode.getContent());
+//
+//                if(null != radioButton){
+////                    YXCode yxCode = YXCode.newDefaultInstanceWithQRInside(content, ErrorCorrectionLevel.L);
+                    JumperUtils.launchResult(this,testGenNestYXCode(content),"insideCode","L","md5");
+//                }
         }
     }
 
